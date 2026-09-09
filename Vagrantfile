@@ -96,9 +96,18 @@ Vagrant.configure("2") do |config|
 
   # ── Geteilte Ordner ────────────────────────────────────────────────────────
   # Der Ordner mit diesem Vagrantfile erscheint in der VM als /vagrant.
-  # Dateien, die du dort ablegst, sind auch in der VM sichtbar (und
-  # umgekehrt) – praktisch, um z. B. eigene ROS-Pakete zu sichern.
+  # Nach Repo-Updates auf dem Host einmal `vagrant reload` ausführen,
+  # damit Änderungen am Vagrantfile wirksam werden.
   config.vm.synced_folder ".", "/vagrant"
+
+  # Arbeitsbereich der Teilnehmer: eigene ROS-Projekte und eigene
+  # Notebooks. Der Inhalt bleibt auf dem Host-Rechner erhalten (Ordner
+  # "workspace" im Repo-Verzeichnis) und ist per .gitignore vollständig
+  # vom Git ausgeschlossen – Teilnehmer-Änderungen landen nicht im
+  # Repository. Unterrichtsmaterial (notebooks/, examples/) wird dagegen
+  # über Git verteilt und in der VM als Kopie nach ~/notebooks geholt:
+  #   cp -a /vagrant/notebooks/. ~/notebooks/
+  config.vm.synced_folder "./workspace", "/home/vagrant/workspace"
 
   # ── Zugangsdaten bei jedem Start anzeigen ──────────────────────────────────
   # run: "always" → läuft bei JEDEM vagrant up / reload / resume, nicht nur
@@ -117,6 +126,8 @@ Vagrant.configure("2") do |config|
     echo "║     Login:    ohne Passwort (nur im Heimnetz nutzen!)     ║"
     echo "║                                                           ║"
     echo "║   Terminal:   vagrant ssh (oder Terminal in code-server)  ║"
+    echo "║                                                           ║"
+    echo "║   Arbeiten:   ~/workspace · Material: ~/notebooks (Kopie) ║"
     echo "╚═══════════════════════════════════════════════════════════╝"
   SHELL
 
@@ -129,10 +140,10 @@ Vagrant.configure("2") do |config|
   #    ros2 run demo_nodes_cpp talker  # Demo-Publisher starten
   #    ros2 topic echo /chatter        # Nachrichten live mitlesen
   #
-  #  Eigenes ROS-Paket bauen (colcon ist das Build-Werkzeug):
-  #    mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
+  #  Eigenes ROS-Paket bauen (colcon ist das Build-Werkzeug), Ordner:
+  #    mkdir -p ~/workspace/src && cd ~/workspace/src
   #    ros2 pkg create mein_paket --build-type ament_python
-  #    cd ~/ros2_ws && colcon build && source install/setup.bash
+  #    cd ~/workspace && colcon build && source install/setup.bash
   #
   #  Mikrocontroller (Arduino/ESP32) mit PlatformIO:
   #    – in code-server: Seitenleiste → PlatformIO-Icon → New Project

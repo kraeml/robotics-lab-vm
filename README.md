@@ -18,7 +18,8 @@ vagrant up
 ```
 
 Danach: code-server unter `http://192.168.33.10:8080` (Passwort:
-`change_me`), Terminal-Zugriff siehe „Terminal-Zugriff in der VM" unten.
+`change_me`), Terminal-Zugriff siehe „Terminal-Zugriff in der VM"
+unten, Notebooks-Material siehe „Ordnerstruktur".
 
 ---
 
@@ -123,6 +124,8 @@ Zugangsadressen für den Browser:
 ║     Login:    ohne Passwort (nur im Heimnetz nutzen!)     ║
 ║                                                           ║
 ║   Terminal:   vagrant ssh (oder Terminal in code-server)  ║
+║                                                           ║
+║   Arbeiten:   ~/workspace · Material: ~/notebooks (Kopie) ║
 ╚═══════════════════════════════════════════════════════════╝
 ```
 
@@ -180,6 +183,50 @@ für die Arbeit ist einer der beiden Wege oben aber bequemer.)*
 
 ---
 
+## Ordnerstruktur
+
+Das Repository enthält drei Ordner, die in der VM wie folgt landen:
+
+| Ordner im Repo | In der VM | Zweck |
+|---|---|---|
+| `notebooks/` | Kopie unter `~/notebooks` | Jupyter-Notebooks (Unterrichtsmaterial) |
+| `examples/` | `/vagrant/examples` | Vorgefertigte ROS-Projekte zum Kopieren |
+| `workspace/` | `~/workspace` (geteilt) | Dein eigener Arbeitsbereich |
+
+**Notebooks ausführen, ohne das Git zu berühren:** Das Material wird
+über Git verteilt, aber nicht im Repository bearbeitet – sonst würde
+jede Änderung im Git auftauchen, auch nur das bloße Ausführen eines
+Notebooks. Lege deshalb einmal eine Arbeitskopie an:
+
+```bash
+mkdir -p ~/notebooks && cp -a /vagrant/notebooks/. ~/notebooks/
+```
+
+Notebooks öffnest und führst du danach unter `~/notebooks` aus; eigenes
+oder verändertes Material gehört nach `~/workspace`. Nach einem
+`git pull` auf dem Host-Rechner genügt es, denselben Befehl zu
+wiederholen – er aktualisiert die Kopie (überschreibt dabei Änderungen
+unter `~/notebooks`).
+
+**Eigene ROS-Projekte:** kommen nach `~/workspace/src` (siehe
+„Erste Schritte in der VM" unten). Der Ordner ist mit deinem Rechner
+geteilt, bleibt aber über die `.gitignore` vollständig außen vor –
+deine Projekte und Build-Artefakte landen nicht im Repository. colcon
+in geteilten Ordnern ist etwas langsamer; für größere Projekte lohnt
+sich ein nicht geteilter Workspace direkt in der VM (z. B. `~/ros2_ws`).
+
+**Vorgefertigte ROS-Projekte:** Pakete aus `examples/` vor dem Bauen
+nach `~/workspace/src/` kopieren, z. B.:
+
+```bash
+cp -a /vagrant/examples/mein_beispiel ~/workspace/src/
+```
+
+**Nach Repo-Updates:** Hat sich das `Vagrantfile` geändert, einmal
+`vagrant reload` ausführen.
+
+---
+
 ## Erste Schritte in der VM
 
 Öffne ein Terminal in der VM (siehe „Terminal-Zugriff in der VM" oben)
@@ -196,9 +243,9 @@ ros2 topic echo /chatter         # Nachrichten live mitlesen (neues Terminal)
 **Eigenes ROS-Paket anlegen:**
 
 ```bash
-mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
+mkdir -p ~/workspace/src && cd ~/workspace/src
 ros2 pkg create mein_paket --build-type ament_python
-cd ~/ros2_ws && colcon build && source install/setup.bash
+cd ~/workspace && colcon build && source install/setup.bash
 ```
 
 `colcon` ist das Build-Werkzeug von ROS 2 – es übersetzt und verlinkt

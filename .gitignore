@@ -1,1 +1,11 @@
+# Vagrant-Verwaltungsdaten
 .vagrant/
+
+# Arbeitsbereich der Teilnehmer – bleibt vollständig außerhalb des Git
+/workspace/*
+!/workspace/.gitkeep
+
+# Python-/Jupyter-Artefakte
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
