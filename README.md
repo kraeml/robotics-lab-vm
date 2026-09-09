@@ -87,6 +87,10 @@ Falls du Git nicht per Kommandozeile nutzen möchtest: Auf der
 Repository-Seite gibt es einen Button „Code" → „Download ZIP". Entpacke
 die ZIP-Datei anschließend an einem Ort deiner Wahl.
 
+**Hinweis:** Diese Methode ist umständlicher – du bekommst keine
+Aktualisierungen mit, und `vagrant up` funktioniert nur, wenn du die
+ZIP-Datei vollständig entpackt hast. Git ist die bessere Wahl.
+
 ### 2. VM starten
 
 ```bash
@@ -287,7 +291,7 @@ Netzwerk** (z. B. zu Hause oder im Schulnetz) gedacht:
 
 Bevor du die VM in einem Netzwerk mit fremdem Zugriff (z. B. offenes
 WLAN, Internet) betreibst, lies unbedingt die Datei
-`INTERNET-ACCESS.md` im Repository.
+[INTERNET-ACCESS](INTERNET-ACCESS.md) im Repository.
 
 ---
 

@@ -29,7 +29,7 @@
 #      USB-Durchreichung (Arduino & Co. flashen), nicht für den Start
 #
 #  So startest du:
-#    1. Dieses Repo klonen (oder als ZIP herunterladen und entpacken)
+#    1. Dieses Repo klonen
 #    2.  vagrant up   (erster Start: einige Minuten Geduld für den
 #        Download der Box)
 #    3. Die Zugangsdaten stehen bei jedem Start am Ende der Konsolenausgabe
