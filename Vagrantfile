@@ -115,6 +115,8 @@ Vagrant.configure("2") do |config|
     echo "║   JupyterLab (Python-/ROS-Notebooks)                      ║"
     echo "║     Adresse:  http://192.168.33.10:8888                   ║"
     echo "║     Login:    ohne Passwort (nur im Heimnetz nutzen!)     ║"
+    echo "║                                                           ║"
+    echo "║   Terminal:   vagrant ssh (oder Terminal in code-server)  ║"
     echo "╚═══════════════════════════════════════════════════════════╝"
   SHELL
 

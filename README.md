@@ -9,6 +9,19 @@ Vagrant oder ROS 2. Du brauchst nur die Schritte weiter unten zu befolgen.
 
 ---
 
+## Schnellstart (für Erfahrene)
+
+```bash
+git clone https://codeberg.org/kraeml/robotics-lab-vm.git
+cd robotics-lab-vm
+vagrant up
+```
+
+Danach: code-server unter `http://192.168.33.10:8080` (Passwort:
+`change_me`), Terminal-Zugriff siehe „Terminal-Zugriff in der VM" unten.
+
+---
+
 ## Was du am Ende hast
 
 Nach der Einrichtung läuft auf deinem Rechner eine virtuelle Maschine mit:
@@ -34,8 +47,8 @@ und wieder löschen, ohne dass sich etwas an deinem eigentlichen System
 
 ## Voraussetzungen
 
-Du brauchst drei Programme auf deinem Rechner. Alle drei sind kostenlos
-und laufen unter Windows, macOS und Linux.
+Du brauchst drei Programme (plus ein optionales) auf deinem Rechner.
+Alle sind kostenlos und laufen unter Windows, macOS und Linux.
 
 1. **[VirtualBox](https://www.virtualbox.org/wiki/Downloads)**
    Führt die virtuelle Maschine aus.
@@ -66,8 +79,8 @@ da die VM eine komplette Ubuntu-Installation enthält.
 und gib ein:
 
 ```bash
-git clone <URL-dieses-Repositories>
-cd <repo-ordner>
+git clone https://codeberg.org/kraeml/robotics-lab-vm.git
+cd robotics-lab-vm
 ```
 
 Falls du Git nicht per Kommandozeile nutzen möchtest: Auf der
@@ -104,6 +117,8 @@ Zugangsadressen für den Browser:
 ║   JupyterLab (Python-/ROS-Notebooks)                      ║
 ║     Adresse:  http://192.168.33.10:8888                   ║
 ║     Login:    ohne Passwort (nur im Heimnetz nutzen!)     ║
+║                                                           ║
+║   Terminal:   vagrant ssh (oder Terminal in code-server)  ║
 ╚═══════════════════════════════════════════════════════════╝
 ```
 
@@ -114,7 +129,9 @@ beim ersten Mal.
 
 ## Ergebnis prüfen
 
-- Im geöffneten VM-Fenster siehst du einen Ubuntu-Desktop.
+- Im geöffneten VM-Fenster siehst du einen Ubuntu-Desktop. Am
+  Anmeldebildschirm meldest du dich mit dem Benutzer `vagrant` und dem
+  Passwort `vagrant` an.
 - Öffne im Browser deines **Host-Rechners** (nicht in der VM!) die
   Adresse `http://192.168.33.10:8080` → code-server sollte laden und
   nach dem Passwort `change_me` fragen.
@@ -123,10 +140,46 @@ beim ersten Mal.
 
 ---
 
+## Terminal-Zugriff in der VM
+
+Es gibt zwei Wege, in der VM mit einem Terminal zu arbeiten:
+
+### Weg 1: Terminal in code-server (empfohlen)
+
+Öffne `http://192.168.33.10:8080` im Browser und starte ein Terminal:
+
+- Tastenkürzel: ``Strg + ` `` (Backtick)
+- oder Menü oben links → **Terminal** → **New Terminal**
+
+Das Terminal läuft direkt in der VM – ROS 2 ist dort bereits aktiviert,
+du kannst also sofort `ros2` und `colcon` benutzen (siehe
+„Erste Schritte in der VM" unten).
+
+### Weg 2: SSH mit `vagrant ssh`
+
+Öffne das Terminal deines **Host-Rechners** im Repository-Ordner
+(Windows: „Git Bash") und gib ein:
+
+```bash
+vagrant ssh
+```
+
+Du befindest dich nun als Benutzer `vagrant` in der VM – auch hier ist
+die ROS-2-Umgebung vorbereitet (`echo $ROS_DISTRO` zeigt `jazzy`).
+Verlassen mit `exit` oder **Strg + D**.
+
+> **Hinweis:** `vagrant ssh` immer im Repository-Ordner ausführen –
+> Vagrant findet die VM über das dort liegende `Vagrantfile`.
+
+*(Direkt im Ubuntu-Desktop der VM gibt es ebenfalls ein Terminal –
+für die Arbeit ist einer der beiden Wege oben aber bequemer.)*
+
+---
+
 ## Erste Schritte in der VM
 
-Öffne in code-server (`http://192.168.33.10:8080`) ein Terminal
-(Menü → Terminal → New Terminal) und probiere aus:
+Öffne ein Terminal in der VM (siehe „Terminal-Zugriff in der VM" oben)
+und probiere aus:
 
 **ROS 2 testen:**
 
@@ -209,6 +262,11 @@ wiederholen).
 - **VM-Fenster bleibt schwarz oder friert ein:** in den
   BIOS/UEFI-Einstellungen deines Rechners prüfen, ob
   Virtualisierung (Intel VT-x / AMD-V) aktiviert ist.
+- **Windows: Fehler wie `VT-x is not available` oder `VERR_VMX_NO_VMX`:**
+  Hyper-V (z. B. durch WSL2, Docker Desktop oder „Windows-Sandbox")
+  belegt die Virtualisierung. Abhilfe: in der Eingabeaufforderung als
+  Administrator `bcdedit /set hypervisorlaunchtype off` ausführen und
+  neu starten (rückgängig mit `bcdedit /set hypervisorlaunchtype auto`).
 - **Browser-Adressen sind nicht erreichbar:** prüfen, ob die VM
   vollständig gestartet ist (Zugangsdaten-Übersicht im Terminal muss
   erschienen sein), und ob eine Firewall den Zugriff blockiert.
@@ -220,9 +278,19 @@ wiederholen).
 Diese Umgebung ist für den Einsatz im **eigenen, vertrauenswürdigen
 Netzwerk** (z. B. zu Hause oder im Schulnetz) gedacht:
 
-- code-server nutzt das Standardpasswort `change_me` – bitte ändern.
+- code-server nutzt das Standardpasswort `change_me` – bitte ändern:
+  In der VM (z. B. per `vagrant ssh`) die Datei
+  `~/.config/code-server/config.yaml` öffnen, unter `password:` ein
+  eigenes Passwort eintragen und den Dienst neu starten:
+  `sudo systemctl restart code-server@vagrant`
 - JupyterLab läuft ganz ohne Passwort.
 
 Bevor du die VM in einem Netzwerk mit fremdem Zugriff (z. B. offenes
 WLAN, Internet) betreibst, lies unbedingt die Datei
 `INTERNET-ACCESS.md` im Repository.
+
+---
+
+## Lizenz
+
+Dieses Repository steht unter der [MIT-Lizenz](LICENSE).
