@@ -342,6 +342,14 @@ WLAN, Internet) betreibst, lies unbedingt die Datei
 
 ---
 
+## Weitere Dokumentation
+
+- [Unterrichtskonzept](unterrichtskonzept.md) – Wie die Lab-VM als
+  Grundlage für projektorientierten IT-Unterricht (VM, Raspberry Pi,
+  STM32, ROS 2) aufgebaut und in Phasen gegliedert werden kann.
+
+---
+
 ## Lizenz
 
 Dieses Repository steht unter der [MIT-Lizenz](LICENSE).
