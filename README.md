@@ -347,6 +347,9 @@ WLAN, Internet) betreibst, lies unbedingt die Datei
 - [Unterrichtskonzept](unterrichtskonzept.md) – Wie die Lab-VM als
   Grundlage für projektorientierten IT-Unterricht (VM, Raspberry Pi,
   STM32, ROS 2) aufgebaut und in Phasen gegliedert werden kann.
+- [SD-Karte in VirtualBox](sd-karte-virtualbox.md) – Eine SD-Karte
+  (z. B. für den Raspberry Pi Imager) per USB-Reader in die VM
+  durchreichen.
 
 ---
 
