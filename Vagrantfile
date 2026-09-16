@@ -35,7 +35,28 @@
 #    3. Die Zugangsdaten stehen bei jedem Start am Ende der Konsolenausgabe
 # ══════════════════════════════════════════════════════════════════════
 
+# ── VM-Name ────────────────────────────────────────────────────────────────
+# Name der VM in VirtualBox (sichtbar im VirtualBox-Manager) und Basis für
+# den Hostnamen innerhalb der VM. Zentral definiert, damit er nicht mehrfach
+# im Vagrantfile verstreut gepflegt werden muss (z. B. bei vb.name weiter
+# unten).
 VM_NAME = "robotics"
+
+# ── Disk-Größe ──────────────────────────────────────────────────────────────
+# pi-gen-Image-Builds brauchen 20–40 GB zusätzlich zur Box-Grundlast
+# (~18 GB belegt). Vagrant vergrößert die Box-Disk (VMDK) beim ersten
+# vagrant up nach dieser Änderung automatisch auf die angegebene Größe –
+# intern per VMDK→VDI→Resize→VMDK, einmalig; der Host belegt Platz erst
+# bei Nutzung. Der disk-resize-Provisioner unten lässt Partition und
+# Dateisystem nachwachsen.
+#
+# Default: 64 GB. Überschreibbar per Umgebungsvariable, z. B. für Hosts
+# mit wenig Plattenplatz oder abweichende Anwendungsfälle:
+#   DISK_SIZE=100GB vagrant up
+DISK_SIZE = ENV.fetch("DISK_SIZE", "64GB")
+unless DISK_SIZE =~ /\A[1-9]\d*[GM]B\z/
+  raise "Ungültiges DISK_SIZE-Format: '#{DISK_SIZE}' (erwartet z. B. '64GB' oder '512MB')"
+end
 
 # ── Vagrant-Mindestversion ─────────────────────────────────────────────────
 # `config.vm.disk` (native Disk-Größenanpassung, siehe unten) wird erst ab
@@ -71,14 +92,11 @@ Vagrant.configure("2") do |config|
   # sein soll (z. B. echte Roboter mit ROS-Topics über Netzwerk erreichen):
   # config.vm.network "public_network", bridge: "enp3s0"
 
-  # ── Disk-Größe ──────────────────────────────────────────────────────────────
-  # pi-gen-Image-Builds brauchen 20–40 GB zusätzlich zur Box-Grundlast
-  # (~18 GB belegt). Vagrant vergrößert die Box-Disk (VMDK) beim ersten
-  # vagrant up nach dieser Änderung automatisch auf 64 GB – intern per
-  # VMDK→VDI→Resize→VMDK, einmalig; der Host belegt Platz erst bei Nutzung.
-  # Der disk-resize-Provisioner unten lässt Partition und Dateisystem
-  # nachwachsen. Fest 64 GB – die Schüler-VM ist bewusst ohne ENV-Schalter.
-  config.vm.disk :disk, size: "64GB", primary: true
+  # ── Disk-Größe ─────────────────────────────────────────────────────────────
+  # Details, Begründung und ENV-Override siehe DISK_SIZE-Definition und
+  # Kommentar im Datei-Header oben. Validierung des Formats erfolgt dort
+  # ebenfalls – hier wird der geprüfte Wert nur noch verwendet.
+  config.vm.disk :disk, size: DISK_SIZE, primary: true
 
   # ── Disk-Resize-Provisioner ────────────────────────────────────────────────
   # Passt Partition und Dateisystem an die von Vagrant vergrößerte Disk an
