@@ -37,6 +37,13 @@
 
 VM_NAME = "robotics"
 
+# ── Vagrant-Mindestversion ─────────────────────────────────────────────────
+# `config.vm.disk` (native Disk-Größenanpassung, siehe unten) wird erst ab
+# Vagrant 2.2.0 unterstützt. Bei älteren Versionen bricht Vagrant sonst mit
+# einer schwer verständlichen Fehlermeldung ab oder ignoriert die Einstellung
+# stillschweigend. Diese Prüfung sorgt für einen klaren, frühen Fehlerhinweis.
+Vagrant.require_version ">= 2.2.0"
+
 Vagrant.configure("2") do |config|
 
   # ── Die Box ────────────────────────────────────────────────────────────────
@@ -63,6 +70,77 @@ Vagrant.configure("2") do |config|
   # Bridged Netzwerk: nur nötig, wenn die VM selbst im Heimnetz sichtbar
   # sein soll (z. B. echte Roboter mit ROS-Topics über Netzwerk erreichen):
   # config.vm.network "public_network", bridge: "enp3s0"
+
+  # ── Disk-Größe ──────────────────────────────────────────────────────────────
+  # pi-gen-Image-Builds brauchen 20–40 GB zusätzlich zur Box-Grundlast
+  # (~18 GB belegt). Vagrant vergrößert die Box-Disk (VMDK) beim ersten
+  # vagrant up nach dieser Änderung automatisch auf 64 GB – intern per
+  # VMDK→VDI→Resize→VMDK, einmalig; der Host belegt Platz erst bei Nutzung.
+  # Der disk-resize-Provisioner unten lässt Partition und Dateisystem
+  # nachwachsen. Fest 64 GB – die Schüler-VM ist bewusst ohne ENV-Schalter.
+  config.vm.disk :disk, size: "64GB", primary: true
+
+  # ── Disk-Resize-Provisioner ────────────────────────────────────────────────
+  # Passt Partition und Dateisystem an die von Vagrant vergrößerte Disk an
+  # (siehe config.vm.disk oben). Idempotent und bei jedem Start aktiv
+  # (run: "always") – schlägt nichts fehl, wenn nichts zu tun ist. Zwei
+  # Zweige: LVM (zukünftige Boxen mit Standard-Server-Layout) und die hier
+  # genutzte Variante mit direkter Root-Partition (ext4).
+  config.vm.provision "shell", name: "disk-resize", run: "always", inline: <<~SHELL
+    set -euo pipefail
+
+    echo "==> Aktuelle Disk-Belegung:"
+    lsblk -o NAME,SIZE,FSSIZE /dev/sda || true
+
+    ROOT_SOURCE="$(findmnt -no SOURCE /)"
+    echo "==> Root-Dateisystem: ${ROOT_SOURCE}"
+
+    if vgs ubuntu-vg >/dev/null 2>&1; then
+      FREE_MiB=$(vgs --noheadings -o vg_free --units m --nosuffix ubuntu-vg \
+                 | tr -d ' ' | cut -d'.' -f1)
+      echo "==> Freier VG-Platz: ${FREE_MiB} MiB"
+
+      if [ "${FREE_MiB}" -le 0 ]; then
+        echo "==> LV bereits voll erweitert – überspringe."
+      else
+        echo "==> Erweitere Logical Volume..."
+        lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+
+        echo "==> Erweitere Filesystem..."
+        resize2fs /dev/ubuntu-vg/ubuntu-lv
+      fi
+    elif [ -b "${ROOT_SOURCE}" ]; then
+      if ! command -v growpart >/dev/null 2>&1; then
+        echo "==> growpart nicht gefunden – Partition wird nicht erweitert."
+      else
+        PART_NUM="${ROOT_SOURCE##*[!0-9]}"
+        BASE_DEV="${ROOT_SOURCE%"${PART_NUM}"}"
+        BASE_DEV="${BASE_DEV%p}"
+        echo "==> Erweitere Partition ${PART_NUM} auf ${BASE_DEV}..."
+        set +e
+        GROW_OUT="$(growpart "${BASE_DEV}" "${PART_NUM}" 2>&1)"
+        GROW_RC=$?
+        set -e
+        # rc 0 = vergrößert, rc 1 = NOCHANGE (bereits voll erweitert)
+        if [ "${GROW_RC}" -le 1 ]; then
+          echo "==> ${GROW_OUT}"
+        else
+          echo "==> WARNUNG: growpart fehlgeschlagen – fahre mit resize2fs fort."
+          echo "${GROW_OUT}"
+        fi
+      fi
+
+      echo "==> Erweitere Filesystem..."
+      if ! resize2fs "${ROOT_SOURCE}"; then
+        echo "==> WARNUNG: resize2fs fehlgeschlagen – Dateisystem evtl. unverändert."
+      fi
+    else
+      echo "==> Weder LVM-VG noch direkt erweiterbare Root-Partition erkannt – überspringe."
+    fi
+
+    echo "==> Fertig – neue Größe:"
+    df -h /
+  SHELL
 
   # ── VirtualBox-Einstellungen ───────────────────────────────────────────────
   config.vm.provider "virtualbox" do |vb|
