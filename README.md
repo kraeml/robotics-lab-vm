@@ -274,6 +274,20 @@ Repository-Ordner ausgeführt (nicht in der VM):
 | `vagrant destroy` | VM vollständig löschen (die Box selbst bleibt erhalten) |
 | `vagrant reload` | VM neu starten (z. B. nach Änderungen am Vagrantfile) |
 
+### Speicherplatz der VM (`DISK_SIZE`)
+
+Die virtuelle Festplatte ist standardmäßig auf **64 GB** ausgelegt
+(die Box belegt davon ~18 GB; der Host belegt den Platz erst, wenn die
+VM ihn tatsächlich beschreibt). Auf Rechnern mit wenig Festplattenplatz
+lässt sich die Größe beim Start anpassen:
+
+```bash
+DISK_SIZE=40GB vagrant up
+```
+
+Zulässige Werte sind Zahlen mit den Endungen `GB` oder `MB`
+(z. B. `64GB`, `100GB`, `512MB`).
+
 ---
 
 ## USB-Geräte durchreichen (Arduino, ESP32, ST-Link)
@@ -307,6 +321,54 @@ wiederholen).
 
 ## Häufige Probleme
 
+- **`vagrant up` bricht ab mit „A VirtualBox machine with the name
+  'robotics' already exists":** In VirtualBox existiert bereits eine
+  Maschine mit dem Namen `robotics` – meist ein Überbleibsel einer
+  früheren Installation (z. B. nach einem gelöschten `.vagrant`-Ordner
+  oder einer zweiten Kopie des Repositories). Vagrant kann die neue VM
+  nicht unter demselben Namen anlegen. Zwei Wege, die alte Maschine zu
+  entfernen:
+
+  **Weg 1 – Kommandozeile (empfohlen):**
+
+  1. Vorhandene Maschinen anzeigen:
+
+     ```bash
+     VBoxManage list vms
+     ```
+
+  2. Alte Maschine löschen (Achtung: entfernt auch ihre virtuelle
+     Festplatte!):
+
+     ```bash
+     VBoxManage unregistervm "robotics" --delete
+     ```
+
+  3. Erneut `vagrant up` ausführen.
+
+  Liegen in der alten Maschine noch wichtige Daten, so benenne sie
+  stattdessen in Schritt 2 um (auf einen freien Namen wie
+  `robotics-alt`) und führe danach ebenfalls `vagrant up` aus:
+
+  ```bash
+  VBoxManage modifyvm "robotics" --name robotics-alt
+  ```
+
+  **Weg 2 – VirtualBox-GUI:**
+
+  1. VirtualBox-Manager öffnen und die Maschine **robotics**
+     auswählen.
+  2. Rechtsklick → **Entfernen…** → „Alle Dateien löschen". Sollen die
+     Daten erhalten bleiben, vorher per Rechtsklick in
+     **robotics-alt** umbenennen und sie später entfernen.
+  3. Erneut `vagrant up` ausführen.
+
+  **Aufräumen:** Anschließend tote Vagrant-Einträge mit
+  `vagrant global-status --prune` bereinigen. Reste von
+  fehlgeschlagenen Importen erkennst du in `VBoxManage list vms` an
+  automatisch vergebenen Namen wie `ubuntu-2404-desktop 1_…` – auch
+  sie lassen sich mit `VBoxManage unregistervm "<Name>" --delete`
+  entfernen.
 - **`vagrant up` bricht mit einem Netzwerkfehler ab:** meist liegt es
   am Download der Box – Internetverbindung prüfen und erneut
   versuchen.
@@ -350,6 +412,9 @@ WLAN, Internet) betreibst, lies unbedingt die Datei
 - [SD-Karte in VirtualBox](sd-karte-virtualbox.md) – Eine SD-Karte
   (z. B. für den Raspberry Pi Imager) per USB-Reader in die VM
   durchreichen.
+- [TODO-Board](todo.md) – Kanban-Board mit anstehenden Arbeiten und
+  Hinweisen für Mitwirkende und KI-Agenten.
+- [Changelog](CHANGELOG.md) – Alle nennenswerten Änderungen am Projekt.
 
 ---
 
