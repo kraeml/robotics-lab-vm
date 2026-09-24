@@ -8,6 +8,11 @@ separat versioniert (aktuell 26.09.11).
 
 ## [Unreleased]
 
+### Vagrant
+- VM-Name per Umgebungsvariable überschreibbar (`VM_NAME=… vagrant up`,
+  Default bleibt `robotics`) — Parallel-VMs (z. B. eine Build-VM neben
+  der Schul-VM) kollidieren nicht mehr im VirtualBox-Manager.
+
 ### Dokumentation
 - README: Fehlerbehebung für Namenskollision „A VirtualBox machine with
   the name 'robotics' already exists" in „Häufige Probleme" ergänzt –

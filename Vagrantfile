@@ -40,7 +40,7 @@
 # den Hostnamen innerhalb der VM. Zentral definiert, damit er nicht mehrfach
 # im Vagrantfile verstreut gepflegt werden muss (z. B. bei vb.name weiter
 # unten).
-VM_NAME = "robotics"
+VM_NAME = ENV.fetch("VM_NAME", "robotics")
 
 # ── Disk-Größe ──────────────────────────────────────────────────────────────
 # pi-gen-Image-Builds brauchen 20–40 GB zusätzlich zur Box-Grundlast
