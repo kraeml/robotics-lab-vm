@@ -12,6 +12,11 @@ separat versioniert (aktuell 26.09.11).
 - VM-Name per Umgebungsvariable überschreibbar (`VM_NAME=… vagrant up`,
   Default bleibt `robotics`) — Parallel-VMs (z. B. eine Build-VM neben
   der Schul-VM) kollidieren nicht mehr im VirtualBox-Manager.
+- Host-Only-IP per Umgebungsvariable überschreibbar
+  (`VM_IP=192.168.33.11 vagrant up`, Default bleibt `.10`) — belegte
+  Default-IP durch eine andere laufende Vagrant-VM führt sonst zu
+  ARP-Kollisionen im Host-Only-Netz; Start-Banner und Netzwerk-Zweck
+  erwähnen die Variable.
 
 ### Dokumentation
 - README: Fehlerbehebung für Namenskollision „A VirtualBox machine with
