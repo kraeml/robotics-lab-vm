@@ -40,7 +40,19 @@
 # den Hostnamen innerhalb der VM. Zentral definiert, damit er nicht mehrfach
 # im Vagrantfile verstreut gepflegt werden muss (z. B. bei vb.name weiter
 # unten).
-VM_NAME = "robotics"
+VM_NAME = ENV.fetch("VM_NAME", "robotics")
+
+# ── VM-IP ────────────────────────────────────────────────────────────────────
+# Adresse im Host-Only-Netz, unter der der Host die VM erreicht (Browser-
+# Werkzeuge code-server/JupyterLab, siehe Netzwerk-Abschnitt und Start-Banner).
+# Default: 192.168.33.10. Override per Umgebungsvariable, falls die Default-IP
+# auf dem Host bereits von einer anderen (laufenden) Vagrant-VM im selben
+# Subnetz belegt ist — sonst kollidieren beide VMs im ARP-Cache des Hosts:
+#   VM_IP=192.168.33.11 vagrant up
+VM_IP = ENV.fetch("VM_IP", "192.168.33.10")
+unless VM_IP =~ /\A\d{1,3}(\.\d{1,3}){3}\z/ && VM_IP.split(".").all? { |o| o.to_i <= 255 }
+  raise "Ungültiges VM_IP-Format: '#{VM_IP}' (erwartet z. B. '192.168.33.11')"
+end
 
 # ── Disk-Größe ──────────────────────────────────────────────────────────────
 # pi-gen-Image-Builds brauchen 20–40 GB zusätzlich zur Box-Grundlast
@@ -77,12 +89,13 @@ Vagrant.configure("2") do |config|
 
   # ── Netzwerk ───────────────────────────────────────────────────────────────
   # Privates Netzwerk (Host-Only): der Host erreicht die VM direkt unter
-  # 192.168.33.10 – das ist die Adresse für die Browser-Werkzeuge.
-  config.vm.network "private_network", ip: "192.168.33.10"
+  # VM_IP (Default 192.168.33.10, Override siehe VM_IP-Definition oben) –
+  # das ist die Adresse für die Browser-Werkzeuge.
+  config.vm.network "private_network", ip: VM_IP
 
   # Browser-Werkzeuge (in der Box enthalten):
-  #   code-server:  http://192.168.33.10:8080  (Passwort "change_me" → ändern!)
-  #   JupyterLab:   http://192.168.33.10:8888  (ohne Passwort – nur Heimnetz!)
+  #   code-server:  http://<VM_IP>:8080  (Passwort "change_me" → ändern!)
+  #   JupyterLab:   http://<VM_IP>:8888  (ohne Passwort – nur Heimnetz!)
   # Über das Host-Only-Netz sind sie so direkt erreichbar. Wer lieber über
   # localhost zugreifen will, kommentiert die NAT-Weiterleitungen ein:
   # config.vm.network :forwarded_port, guest: 8080, host: 8080, auto_correct: true
@@ -214,11 +227,11 @@ Vagrant.configure("2") do |config|
     echo "║   Robotic-Entwicklungsumgebung – Zugriff im Browser       ║"
     echo "╠═══════════════════════════════════════════════════════════╣"
     echo "║   code-server (VS Code im Browser)                        ║"
-    echo "║     Adresse:  http://192.168.33.10:8080                   ║"
+    echo "║     Adresse:  http://#{VM_IP}:8080                   ║"
     echo "║     Passwort: change_me                                   ║"
     echo "║                                                           ║"
     echo "║   JupyterLab (Python-/ROS-Notebooks)                      ║"
-    echo "║     Adresse:  http://192.168.33.10:8888                   ║"
+    echo "║     Adresse:  http://#{VM_IP}:8888                   ║"
     echo "║     Login:    ohne Passwort (nur im Heimnetz nutzen!)     ║"
     echo "║                                                           ║"
     echo "║   Terminal:   vagrant ssh (oder Terminal in code-server)  ║"
