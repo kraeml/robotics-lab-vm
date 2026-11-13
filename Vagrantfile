@@ -186,7 +186,7 @@ Vagrant.configure("2") do |config|
     # 3D-Beschleunigung – wichtig für RViz, Gazebo und Simulatoren
     vb.customize ["modifyvm", :id, "--vram", "128"]
     vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
-    vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+    vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxsvga"]
 
     # Copy & Paste sowie Drag & Drop zwischen Host und VM
     vb.customize ["modifyvm", :id, "--clipboard-mode", "bidirectional"]

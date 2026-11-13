@@ -159,3 +159,4 @@ Alle Befehle werden im Terminal innerhalb des Projektverzeichnisses ausgeführt,
 ### Ressourcenmangel bei 3D-Simulationen
 
 * ROS-Tools wie RViz oder Simulationsumgebungen wie Gazebo benötigen Grafikbeschleunigung und CPU-Leistung. Weist das Hostsystem der VM zu wenig RAM (unter 4 GB) oder nur einen CPU-Kern zu, frieren grafische Anwendungen häufig ein.
+* In dieser VM ist **VBoxSVGA** als Grafikcontroller eingestellt, da **VMSVGA** in der Praxis wiederholt eingefroren ist. VBoxSVGA unterstützt 3D-Beschleunigung; dafür müssen passende VirtualBox Guest Additions im Gast und funktionierende Grafiktreiber auf dem Host vorhanden sein. Ob der Gast tatsächlich Hardwarebeschleunigung nutzt, lässt sich mit `glxinfo -B` prüfen: `llvmpipe` als Renderer weist auf Software-Rendering hin. Bei Grafikproblemen außerdem die Startmeldungen von RViz bzw. Gazebo prüfen.
