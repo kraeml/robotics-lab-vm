@@ -12,7 +12,7 @@ Vagrant oder ROS 2. Du brauchst nur die Schritte weiter unten zu befolgen.
 ## Schnellstart (für Erfahrene)
 
 ```bash
-git clone https://codeberg.org/kraeml/robotics-lab-vm.git
+git clone https://github.com/kraeml/robotics-lab-vm.git
 cd robotics-lab-vm
 vagrant up
 ```
@@ -80,7 +80,7 @@ da die VM eine komplette Ubuntu-Installation enthält.
 und gib ein:
 
 ```bash
-git clone https://codeberg.org/kraeml/robotics-lab-vm.git
+git clone https://github.com/kraeml/robotics-lab-vm.git
 cd robotics-lab-vm
 ```
 
