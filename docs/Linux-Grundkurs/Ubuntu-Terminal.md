@@ -24,7 +24,7 @@ Im Alltag sagt jeder „Terminal" und meint alles zusammen.
 
 **Terminal öffnen:** `Strg+Alt+T`
 
-**Kopieren und Einfügen:** `Strg+Umschalt+C` und `Strg+Umschalt+V`. Finger weg von `Strg+C` allein: Das bricht laufende Programme ab, statt zu kopieren. In ROS 2 brauchst Du genau das ständig, um Programme zu beenden.
+**Kopieren und Einfügen:** `Strg+Umschalt+C` und `Strg+Umschalt+V`. `Strg+C` allein kopiert nicht, sondern sendet normalerweise ein Unterbrechungssignal an das laufende Vordergrundprogramm. In ROS 2 nutzt Du es häufig, um Programme zu stoppen; nicht jedes Programm muss darauf reagieren.
 
 Die Befehle hier kannst Du per Copy & Paste übernehmen. Klappt etwas nicht, lies zuerst die Fehlermeldung und schau in den Abschnitt „Typische Anfängerfehler". Meist ist es ein Tippfehler oder der falsche Ordner. Abgeschickt wird mit `Enter`.
 
@@ -58,10 +58,10 @@ Zwei Kürzel brauchst Du ständig:
 | `grep` | `grep Hallo datei.txt` | Zeigt nur Zeilen, die „Hallo" enthalten |
 | `sudo` | `sudo apt update` | Führt einen Befehl mit Administratorrechten aus |
 | `apt` | `sudo apt install git` | Installiert Software, hier das Programm `git` |
-| `source` | `source datei.bash` | Liest eine Skriptdatei in der laufenden Shell ein |
+| `source` | `source datei.bash` | Führt den Inhalt einer Skriptdatei in der laufenden Shell aus |
 | `alias` | `alias hallo="echo hallo"` | Vergibt einen Kurznamen für einen Befehl |
 
-`source` taucht in fast jeder ROS-2-Anleitung auf. Deshalb steht es schon hier.
+`source` taucht in fast jeder ROS-2-Anleitung auf. Deshalb steht es schon hier. Es führt den Shell-Code der Datei mit Deinen Benutzerrechten aus. Führe deshalb nur Skripte aus vertrauenswürdigen Quellen aus.
 
 **Aufwärmen: Ordner, Dateien, Editor**
 
@@ -233,7 +233,7 @@ Zum Stand der Distributionen (aus der ROS-Dokumentation und [endoflife.date](htt
 
 **`source` und `~/.bashrc`: der ROS-2-Pflichtbefehl**
 
-Hier stolpern die meisten Einsteiger. Nach der Installation kennt Dein Terminal die ROS-2-Befehle noch nicht. Du musst ihm erst die Einrichtungsdatei bekannt machen. Für Jazzy lautet der Befehl, so steht er auch in der offiziellen Anleitung:
+Hier stolpern die meisten Einsteiger. Nach der Installation kennt Dein Terminal die ROS-2-Befehle noch nicht. Du musst die Einrichtungsdatei in der aktuellen Shell ausführen. Für Jazzy lautet der Befehl, so steht er auch in der offiziellen Anleitung:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
@@ -276,7 +276,7 @@ Der Punkt steht für den aktuellen Ordner. Praktisch, wenn Du das Ergebnis Deine
 - **„No such file or directory"**: Falscher Ordner oder falscher Pfad. `pwd` und `ls` zeigen Dir, wo Du bist.
 - **„File exists"** bei `mkdir`: Den Ordner gibt es schon. Anderen Namen wählen.
 - **„Permission denied"**: Keine Rechte für diese Datei. Das ist kein Grund, reflexartig `sudo` davorzusetzen. Prüfe erst, ob Du im richtigen Ordner bist.
-- **Das Terminal „hängt"**: Meist läuft noch ein Programm. `Strg+C` beendet es.
+- **Das Terminal „hängt"**: Meist läuft noch ein Programm. `Strg+C` versucht, das Vordergrundprogramm zu unterbrechen; nicht jedes Programm reagiert darauf.
 
 **Fazit**
 
